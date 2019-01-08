@@ -34,11 +34,6 @@ public class InvisibleEnter extends Extension {
 
     @Override
     protected void initExtension() {
-        onConnect(new OnConnectionListener() {
-            public void act(String s, int i, String s1) {
-                HarbleAPIFetcher.fetch(s1);
-            }
-        });
         hashSupport = new HashSupport(this);
 
         String initmsg =
