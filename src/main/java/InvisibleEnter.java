@@ -1,6 +1,7 @@
 import gearth.extensions.Extension;
 import gearth.extensions.ExtensionInfo;
-import gearth.extensions.extra.hashing.HashSupport;
+import gearth.extensions.extra.harble.ChatConsole;
+import gearth.extensions.extra.harble.HashSupport;
 import gearth.misc.harble_api.HarbleAPIFetcher;
 import gearth.protocol.HMessage;
 import gearth.protocol.HPacket;
@@ -39,7 +40,16 @@ public class InvisibleEnter extends Extension {
             }
         });
         hashSupport = new HashSupport(this);
-        ChatConsole chatConsole = new ChatConsole(hashSupport, this);
+
+        String initmsg =
+                "Welcome to InvisibleEnter, a tool you can use to bypass the entrance wired of a room. To use this extension, use the following guidelines.\n" +
+                        "--------------------------------------\n" +
+                        "\n" +
+                        "* After entering a room where you want to block the entrance wired, type \":savelast\"\n" +
+                        "\n" +
+                        "* Now re-enter that room, but before you do, type \":block\"";
+
+        final ChatConsole chatConsole = new ChatConsole(hashSupport, this, initmsg);
 
         final List<HPacket> bufferIncoming = new ArrayList<HPacket>();
         intercept(HMessage.Side.TOCLIENT, new MessageListener() {
@@ -69,8 +79,10 @@ public class InvisibleEnter extends Extension {
                             sendToClient(packet);
                         }
                         block = false;
+                        chatConsole.writeOutput("Bypassed the room entrance wired", false);
                 }
                 else {
+                    bufferIncoming.clear();
                     isBuffering = true;
                 }
             }
@@ -80,12 +92,14 @@ public class InvisibleEnter extends Extension {
             public void inputEntered(String input) {
                 input = input.toLowerCase();
 
-                if (input.equals("savelast")) {
+                if (input.equals(":savelast")) {
                     isBuffering = false;
                     saved.clear();
                     saved.addAll(bufferIncoming);
+                    chatConsole.writeOutput("Saving " + saved.size() + " packets", false);
+
                 }
-                else if (input.equals("block")) {
+                else if (input.equals(":block")) {
                     block = true;
                 }
             }
