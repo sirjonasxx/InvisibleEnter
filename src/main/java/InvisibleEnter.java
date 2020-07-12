@@ -1,6 +1,7 @@
 import gearth.extensions.Extension;
 import gearth.extensions.ExtensionInfo;
 import gearth.extensions.extra.harble.ChatConsole;
+import gearth.extensions.extra.harble.ChatInputListener;
 import gearth.extensions.extra.harble.HashSupport;
 import gearth.misc.harble_api.HarbleAPIFetcher;
 import gearth.protocol.HMessage;
@@ -47,7 +48,7 @@ public class InvisibleEnter extends Extension {
         final ChatConsole chatConsole = new ChatConsole(hashSupport, this, initmsg);
 
         final List<HPacket> bufferIncoming = new ArrayList<HPacket>();
-        intercept(HMessage.Side.TOCLIENT, new MessageListener() {
+        intercept(HMessage.Direction.TOCLIENT, new MessageListener() {
             public void act(HMessage hMessage) {
                 if (isBuffering) {
                     bufferIncoming.add(hMessage.getPacket());
@@ -58,7 +59,7 @@ public class InvisibleEnter extends Extension {
         final List<HPacket> saved = new ArrayList<HPacket>();
 
 
-        hashSupport.intercept(HMessage.Side.TOSERVER, "RequestRoomData", new MessageListener() {
+        hashSupport.intercept(HMessage.Direction.TOSERVER, "RequestRoomData", new MessageListener() {
             public void act(HMessage hMessage) {
                 if (isBuffering) {
                     isBuffering = false;
@@ -66,7 +67,7 @@ public class InvisibleEnter extends Extension {
             }
         });
 
-        hashSupport.intercept(HMessage.Side.TOSERVER, "RequestRoomHeightmap", new MessageListener() {
+        hashSupport.intercept(HMessage.Direction.TOSERVER, "RequestRoomHeightmap", new MessageListener() {
             public void act(HMessage hMessage) {
                 if (block) {
                         hMessage.setBlocked(true);
@@ -83,7 +84,7 @@ public class InvisibleEnter extends Extension {
             }
         });
 
-        chatConsole.onInput(new ChatConsole.ChatInputListener() {
+        chatConsole.onInput(new ChatInputListener() {
             public void inputEntered(String input) {
                 input = input.toLowerCase();
 
